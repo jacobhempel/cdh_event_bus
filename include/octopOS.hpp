@@ -6,12 +6,14 @@
 
 using std::vector;
 using std::cout;
+using std::endl;
+using std::cerr;
 
 class SPACEHAUC_thread {
 public:
    SPACEHAUC_thread() {}
-   virtual ~SPACEHAUC_thread() {}
-   bool StartInternalThread() {
+   virtual ~SPACEHAUC_thread() = default;
+     bool StartInternalThread() {
      return (pthread_create(&_thread, NULL, InternalThreadEntryFunc,this) == 0);
    }
 

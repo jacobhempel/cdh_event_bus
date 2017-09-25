@@ -6,6 +6,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_CHECK_CXX
   "/home/jacob/Nextcloud/SPACEHAUC_code/octopOS/src/main.cpp" "/home/jacob/Nextcloud/SPACEHAUC_code/octopOS/build/CMakeFiles/hello_world.dir/src/main.cpp.o"
   "/home/jacob/Nextcloud/SPACEHAUC_code/octopOS/src/octopOS.cpp" "/home/jacob/Nextcloud/SPACEHAUC_code/octopOS/build/CMakeFiles/hello_world.dir/src/octopOS.cpp.o"
+  "/home/jacob/Nextcloud/SPACEHAUC_code/octopOS/src/spacehauc-i2c-mock.cpp" "/home/jacob/Nextcloud/SPACEHAUC_code/octopOS/build/CMakeFiles/hello_world.dir/src/spacehauc-i2c-mock.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

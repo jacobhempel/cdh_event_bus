@@ -114,7 +114,7 @@ CMAKE_OBJCOPY:FILEPATH=/usr/bin/objcopy
 CMAKE_OBJDUMP:FILEPATH=/usr/bin/objdump
 
 //Value Computed by CMake
-CMAKE_PROJECT_NAME:STATIC=hello_world
+CMAKE_PROJECT_NAME:STATIC=octopOS_driver
 
 //Path to a program.
 CMAKE_RANLIB:FILEPATH=/usr/bin/ranlib
@@ -171,6 +171,12 @@ hello_world_BINARY_DIR:STATIC=/home/jacob/Nextcloud/SPACEHAUC_code/octopOS/build
 //Value Computed by CMake
 hello_world_SOURCE_DIR:STATIC=/home/jacob/Nextcloud/SPACEHAUC_code/octopOS
 
+//Value Computed by CMake
+octopOS_driver_BINARY_DIR:STATIC=/home/jacob/Nextcloud/SPACEHAUC_code/octopOS/build
+
+//Value Computed by CMake
+octopOS_driver_SOURCE_DIR:STATIC=/home/jacob/Nextcloud/SPACEHAUC_code/octopOS
+
 
 ########################
 # INTERNAL cache entries
@@ -183,9 +189,9 @@ CMAKE_CACHEFILE_DIR:INTERNAL=/home/jacob/Nextcloud/SPACEHAUC_code/octopOS/build
 //Major version of cmake used to create the current loaded cache
 CMAKE_CACHE_MAJOR_VERSION:INTERNAL=3
 //Minor version of cmake used to create the current loaded cache
-CMAKE_CACHE_MINOR_VERSION:INTERNAL=7
+CMAKE_CACHE_MINOR_VERSION:INTERNAL=5
 //Patch version of cmake used to create the current loaded cache
-CMAKE_CACHE_PATCH_VERSION:INTERNAL=2
+CMAKE_CACHE_PATCH_VERSION:INTERNAL=1
 //ADVANCED property for variable: CMAKE_COLOR_MAKEFILE
 CMAKE_COLOR_MAKEFILE-ADVANCED:INTERNAL=1
 //Path to CMake executable.
@@ -278,7 +284,7 @@ CMAKE_OBJDUMP-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_RANLIB
 CMAKE_RANLIB-ADVANCED:INTERNAL=1
 //Path to CMake installation.
-CMAKE_ROOT:INTERNAL=/usr/share/cmake-3.7
+CMAKE_ROOT:INTERNAL=/usr/share/cmake-3.5
 //ADVANCED property for variable: CMAKE_SHARED_LINKER_FLAGS
 CMAKE_SHARED_LINKER_FLAGS-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_SHARED_LINKER_FLAGS_DEBUG

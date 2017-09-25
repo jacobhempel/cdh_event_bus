@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.8.12.2)
 
 # Change project name to desired name
-set (PROJECT_NAME "hello_world")
+set (PROJECT_NAME "octopOS_driver")
 
 project (${PROJECT_NAME})
 

@@ -6,12 +6,11 @@
 template <class T>
 class topic {
  public:
-  void addSubcriber(subscriber* newSub);
-  vector<subscriber*> mySubs;
-};
+  void addSubcriber(subscriber<T>* newSub) {
+    mySubs.push_back(newSub);
+  };
 
-void topic::addSubcriber(subscriber* newSub) {
-  mySubs.push_back(newSub);
-}
+  vector<subscriber<T>*> mySubs;
+};
 
 #endif   // TOPIC_H

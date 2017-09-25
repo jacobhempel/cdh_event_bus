@@ -6,17 +6,13 @@
 
 #IncludeRegexTransform: 
 
-/home/jacob/Nextcloud/SPACEHAUC_code/SPACEHAUC-I2C-dev/include/./spacehauc-i2c-dev.h
+/home/jacob/Nextcloud/SPACEHAUC_code/octopOS/include/./spacehauc-i2c-dev.h
 linux/i2c-dev.h
 -
 string
 -
 iostream
 -
-
-/home/jacob/Nextcloud/SPACEHAUC_code/SPACEHAUC-I2C-dev/include/spacehauc-i2c-mock.h
-./spacehauc-i2c-dev.h
-/home/jacob/Nextcloud/SPACEHAUC_code/SPACEHAUC-I2C-dev/include/./spacehauc-i2c-dev.h
 
 /home/jacob/Nextcloud/SPACEHAUC_code/octopOS/include/ACS.hpp
 octopOS.hpp
@@ -29,8 +25,8 @@ publisher.hpp
 /home/jacob/Nextcloud/SPACEHAUC_code/octopOS/include/publisher.hpp
 ACS.hpp
 /home/jacob/Nextcloud/SPACEHAUC_code/octopOS/include/ACS.hpp
-../../SPACEHAUC-I2C-dev/include/spacehauc-i2c-mock.h
-/home/jacob/Nextcloud/SPACEHAUC_code/SPACEHAUC-I2C-dev/include/spacehauc-i2c-mock.h
+spacehauc-i2c-mock.h
+/home/jacob/Nextcloud/SPACEHAUC_code/octopOS/include/spacehauc-i2c-mock.h
 
 /home/jacob/Nextcloud/SPACEHAUC_code/octopOS/include/octopOS.hpp
 vector
@@ -43,6 +39,10 @@ octopOS.hpp
 /home/jacob/Nextcloud/SPACEHAUC_code/octopOS/include/octopOS.hpp
 topic.hpp
 /home/jacob/Nextcloud/SPACEHAUC_code/octopOS/include/topic.hpp
+
+/home/jacob/Nextcloud/SPACEHAUC_code/octopOS/include/spacehauc-i2c-mock.h
+./spacehauc-i2c-dev.h
+/home/jacob/Nextcloud/SPACEHAUC_code/octopOS/include/./spacehauc-i2c-dev.h
 
 /home/jacob/Nextcloud/SPACEHAUC_code/octopOS/include/subscriber.hpp
 octopOS.hpp
@@ -73,4 +73,8 @@ iostream
 -
 ../include/octopOS.hpp
 /home/jacob/Nextcloud/SPACEHAUC_code/octopOS/include/octopOS.hpp
+
+/home/jacob/Nextcloud/SPACEHAUC_code/octopOS/src/spacehauc-i2c-mock.cpp
+../include/spacehauc-i2c-mock.h
+/home/jacob/Nextcloud/SPACEHAUC_code/octopOS/include/spacehauc-i2c-mock.h
 
