@@ -3,6 +3,7 @@
 
 CMakeFiles/octopOS.dir/src/main.cpp.o
  ../include/octopos.h
+ ../include/subscriber.h
  ../include/tenticle.h
  ../include/utility.h
  /home/jhassler/SourceCode/spacehauc/octopOS/src/main.cpp
