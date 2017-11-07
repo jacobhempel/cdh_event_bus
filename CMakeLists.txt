@@ -16,10 +16,6 @@ file(GLOB SOURCES "src/*.cpp")
 # Change name of executable to desired name
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-#link boost
-FIND_PACKAGE( Boost 1.55 COMPONENTS program_options REQUIRED system serialization)
-INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
-
 # Check if pthreads.h is being used
 find_package(Threads REQUIRED)
 if(THREADS_HAVE_PTHREAD_ARG)

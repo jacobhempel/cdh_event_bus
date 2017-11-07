@@ -1,4 +1,4 @@
-#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
 
 #IncludeRegexScan: ^.*$
 
@@ -58,11 +58,11 @@ system_error
 cerrno
 -
 
-/home/jhassler/SourceCode/spacehauc/octopOS/src/main.cpp
+/home/jacob/Nextcloud/SPACEHAUC_code/cdh_event_bus/src/main.cpp
 octopos.h
-/home/jhassler/SourceCode/spacehauc/octopOS/src/octopos.h
+/home/jacob/Nextcloud/SPACEHAUC_code/cdh_event_bus/src/octopos.h
 tenticle.h
-/home/jhassler/SourceCode/spacehauc/octopOS/src/tenticle.h
+/home/jacob/Nextcloud/SPACEHAUC_code/cdh_event_bus/src/tenticle.h
 sys/types.h
 -
 unistd.h
@@ -82,15 +82,15 @@ iterator
 vector
 -
 
-/home/jhassler/SourceCode/spacehauc/octopOS/src/octopos.cpp
+/home/jacob/Nextcloud/SPACEHAUC_code/cdh_event_bus/src/octopos.cpp
 octopos.h
-/home/jhassler/SourceCode/spacehauc/octopOS/src/octopos.h
+/home/jacob/Nextcloud/SPACEHAUC_code/cdh_event_bus/src/octopos.h
 
-/home/jhassler/SourceCode/spacehauc/octopOS/src/tenticle.cpp
+/home/jacob/Nextcloud/SPACEHAUC_code/cdh_event_bus/src/tenticle.cpp
 tenticle.h
-/home/jhassler/SourceCode/spacehauc/octopOS/src/tenticle.h
+/home/jacob/Nextcloud/SPACEHAUC_code/cdh_event_bus/src/tenticle.h
 
-/home/jhassler/SourceCode/spacehauc/octopOS/src/utility.cpp
+/home/jacob/Nextcloud/SPACEHAUC_code/cdh_event_bus/src/utility.cpp
 utility.h
-/home/jhassler/SourceCode/spacehauc/octopOS/src/utility.h
+/home/jacob/Nextcloud/SPACEHAUC_code/cdh_event_bus/src/utility.h
 

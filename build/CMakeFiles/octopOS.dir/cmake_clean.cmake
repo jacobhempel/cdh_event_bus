@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/octopOS.dir/src/main.cpp.o"
   "CMakeFiles/octopOS.dir/src/octopos.cpp.o"
+  "CMakeFiles/octopOS.dir/src/main.cpp.o"
   "CMakeFiles/octopOS.dir/src/tenticle.cpp.o"
   "CMakeFiles/octopOS.dir/src/utility.cpp.o"
   "bin/octopOS.pdb"

@@ -1,6 +1,5 @@
 #include "tenticle.h"
 
-
 tenticle::tenticle(key_t msg_key) {
     if ((message_que = msgget(msg_key, 0600)) < 0 ) {
         throw std::system_error(

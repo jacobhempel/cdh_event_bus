@@ -37,13 +37,13 @@ private:
     intptr_t *shared_ptr, *shared_end_ptr;
 
   // topic_data: map[topic name, TopicInfo]
-  // TopicInfo := (pointer into shared mem,
+  // TopicInfo := (offset into shared mem,
   //               reference to shared mem (also a pointer),
-  //               ???)
+  //               array of subscribers)
     std::map<std::string,
-	     std::tuple<unsigned,
-			key_t,
-			std::vector<unsigned>>> topic_data;
+	           std::tuple<unsigned,
+			                  key_t,
+			                  std::vector<unsigned>>> topic_data;
     std::mutex topic_data_rdlock,
         topic_data_wrlock;
     unsigned topic_data_readers = 0;

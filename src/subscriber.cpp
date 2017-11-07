@@ -7,28 +7,23 @@ std::string subscriber::get_data() {
   return dataQ.dequeue();
 }
 
-bool subscriber::register(callback cb, std::string topic, key_t shared_memory) {
-  auto callbacks = registered_callbacks[topic];
+bool subscriber::register(callback cb, std::string topic) {
+  auto callbacks = registered_callbacks[topic]; // ITS PROBABLY MY FAULT
   callbacks.push_back(cb);
-  topic_memory[topic] = shared_memory;
 }
 
 void subscriber::wait_for_data() {
-  while (1) {
+  while (true) {
     for (auto topic_callbacks : registered_callbacks) {
       auto topic = topic_callbacks.key;
       auto callbacks = topic_callbacks.value
       key_t memory = topic_memory[topic];
-
-      if (new_message_in(memory)) {
-	for (auto cb: callbacks) {
-	  cb();
-	}
+      std::pair<bool, std::string> message = read(topic_ids[topic], true);
+      if (message.first) {
+      	for (auto cb: callbacks) {
+      	  //cb(message.second);
+      	}
       }
     }
   }
-}
-
-bool new_message_in(key_t memory) {
-  
 }

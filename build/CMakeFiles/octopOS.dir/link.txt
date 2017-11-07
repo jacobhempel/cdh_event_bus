@@ -1,1 +1,1 @@
-/usr/bin/c++  -std=c++11 -g -Wall  -rdynamic CMakeFiles/octopOS.dir/src/main.cpp.o CMakeFiles/octopOS.dir/src/octopos.cpp.o CMakeFiles/octopOS.dir/src/tenticle.cpp.o CMakeFiles/octopOS.dir/src/utility.cpp.o  -o bin/octopOS -lpthread -lboost_program_options -lboost_system -lboost_serialization 
+/usr/bin/c++   -std=c++11 -g -Wall   CMakeFiles/octopOS.dir/src/octopos.cpp.o CMakeFiles/octopOS.dir/src/main.cpp.o CMakeFiles/octopOS.dir/src/tenticle.cpp.o CMakeFiles/octopOS.dir/src/utility.cpp.o  -o bin/octopOS -rdynamic -lpthread 
