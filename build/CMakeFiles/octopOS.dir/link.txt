@@ -1,1 +1,0 @@
-/usr/bin/c++   -std=c++11 -g -Wall   CMakeFiles/octopOS.dir/src/octopos.cpp.o CMakeFiles/octopOS.dir/src/main.cpp.o CMakeFiles/octopOS.dir/src/tenticle.cpp.o CMakeFiles/octopOS.dir/src/utility.cpp.o  -o bin/octopOS -rdynamic -lpthread 

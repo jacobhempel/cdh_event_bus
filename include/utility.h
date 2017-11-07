@@ -20,6 +20,7 @@
 #define SHMSIZE 4096
 
 #define NUMMODULES 1
+#define SUBCHANNEL 3
 
 typedef struct {
     unsigned rw_array[2];

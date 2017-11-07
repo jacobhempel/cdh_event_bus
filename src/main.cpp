@@ -1,6 +1,8 @@
 #include "octopos.h"
 #include "tenticle.h"
 
+#include "subscriber.h"
+
 #include <sys/types.h>
 #include <unistd.h>
 #include <sys/wait.h>
@@ -11,6 +13,10 @@
 #include <algorithm>
 #include <iterator>
 #include <vector>
+#include <unordered_map>
+
+
+#include <pthread.h>
 
 int main(int argc, char const *argv[]) {
     pid_t pid;
@@ -22,37 +28,33 @@ int main(int argc, char const *argv[]) {
         throw;
     }
 
-    tenticle test(MSGKEY);
-
     if (!(pid = fork())) {
         execl("../../testModule/build/bin/testModule",
             std::to_string(MSGKEY).c_str(), (char*)0);
     }
 
+    int x = MSGKEY;
+    pthread_t tmp;
+
+    if (pthread_create(&tmp, NULL, octopOS::listen_for_child, &x)) {
+        exit(-1);
+    }
+
     // test.write(1, "This is a test string");
-    std::pair<long, std::string> tmp(-1, "");
-    std::pair<unsigned, key_t> shit;
-    tmp = test.read(1);
-    std::cout << tmp.first << " : " << tmp.second << std::endl;
+    // sleep(1);
+    octopOS::getInstance().subscribe_to_topic("test", 0, 12234, sizeof(int));
 
-    std::istringstream iss(tmp.second);
-    std::vector<std::string> tokens{std::istream_iterator<std::string>{iss},
-        std::istream_iterator<std::string>{}};
+    // tenticle test(MSGKEY);
+    subscriber<int> sub("test", MSGKEY);
+    // std::cout << sub.listen_to_topic(4) << std::endl;
+    // std::cout << test.read(4).second << std::endl;
 
-    shit = octopOS::getInstance().create_new_topic(tokens[1], std::stoi(tokens[0]));
 
-    std::stringstream ss;
-    ss << shit.first << " " << shit.second;
 
-    test.write(2, ss.str());
-    octopOS::getInstance().subscribe_to_topic("test", 0);
-
-    tmp = test.read(3);
-    std::cout << tmp.first << " : " << tmp.second << std::endl;
-
-    octopOS::getInstance().propagate_to_subscribers(tmp.second);
-
-    sleep(5);
+    if(pthread_join(tmp, NULL)) {
+        fprintf(stderr, "Error joining thread\n");
+        return 2;
+    }
 
     wait(NULL);
 
