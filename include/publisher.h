@@ -17,14 +17,14 @@ class publisher : public tenticle {
 public:
     publisher(std::string _name, key_t message_key):
         tenticle(message_key), name(_name) {
-        id = getId();
+        id = getTempId(tenticle::role_t::PUBLISHER);
 
-        write(id, "1 "+std::to_string(sizeof(T))+" "+name);
+        write(CREATE_PUB, std::to_string(id)+" "+std::to_string(sizeof(T))+" "+name);
 
-        std::pair<long, std::string> responce;
-        responce = read(id);
+        std::pair<long, std::string> response;
+        response = read(id);
 
-        std::istringstream iss(responce.second);
+        std::istringstream iss(response.second);
         std::vector<std::string> tokens{std::istream_iterator<std::string>{iss},
             std::istream_iterator<std::string>{}};
         if ((semid = semget(std::stoi(tokens[1]), 2, 0600)) < 0) {
@@ -38,6 +38,7 @@ public:
         rw = (shm_object*)(shared_data + std::stoi(tokens[0]));
 
         data_ptr = (T*)(rw + 1);
+        id = std::stoi(tokens[2]);
     }
 
     bool publish(T data) {
@@ -54,7 +55,7 @@ public:
         if (p(semid, 2) >= 0) {
             *data_ptr = data;
             return_value = true;
-            write(id, "2 "+name);
+            write(PUBLISH_CODE, name);
             v(semid, 2);
         }
 
@@ -64,7 +65,6 @@ public:
                 v(semid, 3);  // Should check for success
             v(semid, 1);
         }
-
         return return_value;
     }
 private:

@@ -41,19 +41,18 @@ private:
     static int shmid, tenticle_ids[NUMMODULES];
     static tenticle* tenticles[NUMMODULES];
     static std::vector<int> semids;
-    intptr_t *shared_ptr, *shared_end_ptr;
+    static intptr_t *shared_ptr, *shared_end_ptr;
 
   // topic_data: map[topic name, TopicInfo]
   // TopicInfo := (offset into shared mem,
   //               reference to shared mem (also a pointer),
   //               array of subscribers)
-    std::map<std::string,
+    static std::map<std::string,
 	           std::tuple<unsigned,
 			                  key_t,
-			                  std::vector<unsigned>>> topic_data;
-    std::mutex topic_data_rdlock,
-        topic_data_wrlock;
-    unsigned topic_data_readers = 0;
+			                  std::vector<std::pair<unsigned, long>>
+                        >
+                   > topic_data;
 
     static std::mutex topic_data_rdlock, topic_data_rdtry,
         topic_data_wrlock, topic_data_lock;

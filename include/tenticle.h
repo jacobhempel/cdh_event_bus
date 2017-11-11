@@ -3,9 +3,12 @@
 
 #include <string.h>
 #include <sys/types.h>
+#include <sys/time.h>
+#include <time.h>
 #include <unistd.h>
 
-#include <cstdio>
+#include <iostream>
+#include <cstdlib>
 #include <string>
 #include <utility>
 #include <mutex>
@@ -17,15 +20,17 @@ class tenticle {
 private:
     static int id;
     static std::mutex id_lock;
+    static void initRand(ushort* rand_seed);
 protected:
     int message_que, sem_index;
     static intptr_t* shared_data;
+    enum role_t {SUBSCRIBER, PUBLISHER }; // PROTECT ME SQUIRE
+    long getTempId(role_t role);
 public:
     tenticle(key_t msg_key);
-    std::pair<long, std::string> read(long type, bool ignore = false);
+    std::pair<long, std::string> read(long type, bool block = true);
     bool write(long type, std::string data);
     bool write(std::pair<long, std::string> pair);
-    long getId();
 };
 
 #endif  // INCLUDE_TENTICLE_H

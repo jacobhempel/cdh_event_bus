@@ -129,29 +129,30 @@ void* octopOS::listen_for_child(void* msgkey) {
     tenticle t(*(key_t*)msgkey);
 
     std::pair<long, std::string> data;
-    for (unsigned i = 0; i < 7; ++i) {
+    for (unsigned i = 0; i < 2; ++i) {
         std::cout << "Loop: " << i << std::endl;
 
-        data = t.read(SUBCHANNEL, true);
+        data = t.read(-5);
         std::istringstream iss(data.second);
         std::vector<std::string> tokens {
             std::istream_iterator<std::string> { iss },
             std::istream_iterator<std::string>{}
         };
 
-        switch(std::stoi(tokens[0])) {
-            case 1: {
+        switch(data.first) {
+            case CREATE_PUB: {
                 std::pair<unsigned, key_t> return_data;
 
                 return_data = octopOS::getInstance().create_new_topic(tokens[2],
                     std::stoi(tokens[1]));
                 std::stringstream ss;
-                ss << return_data.first << " " << return_data.second;
-                t.write(data.first, ss.str());
+                ss << return_data.first << " " << return_data.second << " 1264";
+                t.write(std::stoi(tokens[0]), ss.str());
                 break;
             }
-            case 2: {
-                octopOS::getInstance().propagate_to_subscribers(tokens[1]);
+            case PUBLISH_CODE: {
+                octopOS::getInstance().propagate_to_subscribers(tokens[0]);
+                std::cout << "I'm a good publisher! " << std::endl;
                 break;
             }
             case 4: {
@@ -186,9 +187,8 @@ bool octopOS::propagate_to_subscribers(std::string name) {
             tenticles[i.first]->write(SUBCHANNEL, std::to_string(i.second));
 
             std::cout << "Propagating: " << name << ", " << i.first << std::endl;
-            std::cout << "\tData: " << shared_ptr[1] << std::endl;
-
         }
+        std::cout << "\tData: " << shared_ptr[1] << std::endl;
         return_value = true;
     }
 
@@ -208,8 +208,8 @@ long octopOS::subscribe_to_topic(std::string name,
     topic_reader_out();
     if (tmp != topic_data.end()) {
         topic_writer_in();
-        std::get<2>(tmp->second).push_back(
-            std::pair<unsigned, long>(tenticle, message_id));
+        // std::get<2>(tmp->second).push_back(
+        //     std::pair<unsigned, long>(tenticle, message_id));
         topic_writer_out();
         return_value = std::get<0>(tmp->second);
     } else if (size >= 0){

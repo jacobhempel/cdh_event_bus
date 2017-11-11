@@ -18,20 +18,22 @@ tenticle::tenticle(key_t msg_key) {
         }
 }
 
-std::pair<long, std::string> tenticle::read(long type, bool ignore) {
+std::pair<long, std::string> tenticle::read(long type, bool block) {
     message_buffer my_buffer;
-    std::pair<long, std::string> return_value(-1, "");
+    std::pair<long, std::string> return_value(0, "");
     int rc;
 
-    if (ignore)
+    // type *= (under)? -1 : 1;
+
+    if (!block)
         rc = msgrcv(message_que, &my_buffer,
-            sizeof(my_buffer.text), type, MSG_EXCEPT);
+            sizeof(my_buffer.text), type, IPC_NOWAIT); // ADD THE ONLY UNDER STUFF HERE
     else
         rc = msgrcv(message_que, &my_buffer,
-            sizeof(my_buffer.text), type, 0);
+            sizeof(my_buffer.text), type, 0); // AND HERE TOO PLZ
 
     if (rc >= 0) {
-        return_value.first = my_buffer.type;
+        return_value.first = (!block)? 1 : my_buffer.type;
         return_value.second = my_buffer.text;
     }
     return return_value;
@@ -59,16 +61,38 @@ bool tenticle::write(std::pair<long, std::string> pair) {
     return write(pair.first, pair.second);
 }
 
-long tenticle::getId() {
-    long return_value;
+long tenticle::getTempId(role_t role) {
+    long return_value = 0;
+    static ushort rand_seed[3] = { 0 };
 
-    return_value = getpid();
-    return_value <<= 31;
+    switch (role) {
+      default:
+        break;
+      case SUBSCRIBER:
+        return_value |= SUB_BIT;
+        break;
+    }
+    return_value |= TEMP_BIT;
+
     id_lock.lock();
-    return_value += id++;
+    if (!rand_seed[0])
+        initRand(rand_seed);
+
+    return_value |= nrand48(rand_seed) & 0x1fffffff;
     id_lock.unlock();
 
     return return_value;
+}
+
+void tenticle::initRand(ushort *rand_seed) {
+    struct timeval rand_time;
+    gettimeofday(&rand_time, (struct timezone*)NULL);
+
+    rand_seed[0] = (ushort) rand_time.tv_sec;
+    rand_seed[1] = (ushort) (rand_time.tv_usec >> 16);
+    rand_seed[2] = (getpid());
+
+    return; // NOT SURE IF WE WANT LATER : rand_seed;
 }
 
 std::mutex tenticle::id_lock;

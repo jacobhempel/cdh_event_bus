@@ -22,6 +22,12 @@
 #define NUMMODULES 1
 #define SUBCHANNEL 3
 
+const long SUB_BIT = 0x20000000;
+const long TEMP_BIT = 0x40000000;
+
+const long CREATE_PUB = 1;
+const long PUBLISH_CODE = 2;
+
 typedef struct {
     unsigned rw_array[2];
 } shm_object;

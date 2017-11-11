@@ -1,7 +1,8 @@
 #include "octopos.h"
 #include "tenticle.h"
 
-#include "subscriber.h"
+//#include "subscriber.h" PLEASE DONT FORGET ME
+#include "publisher.h"
 
 #include <sys/types.h>
 #include <unistd.h>
@@ -27,12 +28,12 @@ int main(int argc, char const *argv[]) {
         std::cerr << e.what();
         throw;
     }
-
+/*
     if (!(pid = fork())) {
         execl("../../testModule/build/bin/testModule",
             std::to_string(MSGKEY).c_str(), (char*)0);
     }
-
+*/
     int x = MSGKEY;
     pthread_t tmp;
 
@@ -40,21 +41,27 @@ int main(int argc, char const *argv[]) {
         exit(-1);
     }
 
+    octopOS::getInstance().subscribe_to_topic("test", 0, 12234, sizeof(int));
+
+/*
     // test.write(1, "This is a test string");
     // sleep(1);
-    octopOS::getInstance().subscribe_to_topic("test", 0, 12234, sizeof(int));
 
     // tenticle test(MSGKEY);
     subscriber<int> sub("test", MSGKEY);
     // std::cout << sub.listen_to_topic(4) << std::endl;
     // std::cout << test.read(4).second << std::endl;
 
+*/
+    publisher<int> pub("test", x);
 
+    pub.publish(0666);
 
     if(pthread_join(tmp, NULL)) {
         fprintf(stderr, "Error joining thread\n");
         return 2;
     }
+    /*
 
     wait(NULL);
 
@@ -66,6 +73,8 @@ int main(int argc, char const *argv[]) {
     // std::cout << octopOS::getInstance().subscribe_to_topic("foo", 1) << std::endl;
     // octopOS::getInstance().propagate_to_subscribers("test");
     // octopOS::getInstance().propagate_to_subscribers("foo");
+
+*/
 
     return 0;
 }
