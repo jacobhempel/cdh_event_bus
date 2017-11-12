@@ -26,15 +26,15 @@ void octopOS::sig_handler(int sig) {
         }
     }
     for (unsigned i = 0; i < NUMMODULES; ++i) {
-        if (msgctl(tenticle_ids[i], IPC_RMID, NULL) < 0) {
+        tentacles.pop_back();
+        if (msgctl(tentacle_ids[i], IPC_RMID, NULL) < 0) {
             if (sig < 0)
                 throw std::system_error(
                     errno,
                     std::generic_category(),
-                    "Unable to remove tenticle"
+                    "Unable to remove tentacle"
                 );
         }
-        delete tenticles[i];
     }
 }
 
@@ -74,17 +74,17 @@ octopOS::octopOS() {
         sig_handler(-1);
     }
 
-    tenticle::shared_data = shared_ptr;
+    tentacle::shared_data = shared_ptr;
 
     for (unsigned i = 0; i < NUMMODULES; ++i) {
-        if ((tenticle_ids[i] = msgget(MSGKEY + i, IPC_CREAT | 0600)) < 0) {
+        if ((tentacle_ids[i] = msgget(MSGKEY + i, IPC_CREAT | 0600)) < 0) {
             throw std::system_error(
                 errno,
                 std::generic_category(),
                 "Unable to create message queues"
             );
         } else {
-            tenticles[i] = new tenticle(MSGKEY + i);
+            tentacles.push_back(std::make_shared<tentacle>(tentacle(MSGKEY + i)));
         }
     }
 
@@ -103,10 +103,10 @@ std::pair<unsigned, key_t> octopOS::create_new_topic
             semsetall(my_sem, 4, 1);
 
             topic_data.emplace(name, std::tuple<unsigned, key_t,
-                std::vector<std::pair<unsigned, long>>>(
+                std::vector<std::pair<octopOS_id_t, unsigned>>>(
                     shared_end_ptr - shared_ptr,
                     SEMKEY+semids.size(),
-                    std::vector<std::pair<unsigned, long>>()));
+                    std::vector<std::pair<octopOS_id_t, unsigned>>()));
 
                 return_value.first = shared_end_ptr - shared_ptr;
                 return_value.second = SEMKEY+semids.size();
@@ -125,14 +125,15 @@ std::pair<unsigned, key_t> octopOS::create_new_topic
     return return_value;
 }
 
-void* octopOS::listen_for_child(void* msgkey) {
-    tenticle t(*(key_t*)msgkey);
+// signature looks like this to make pthreads (and lukas) happy
+void* octopOS::listen_for_child(void* tentacle_id) {
+    std::shared_ptr<tentacle> t = tentacles[*(int*)tentacle_id];
 
     std::pair<long, std::string> data;
-    for (unsigned i = 0; i < 2; ++i) {
-        std::cout << "Loop: " << i << std::endl;
+    for (unsigned i = 0; i < 3; ++i) {
+        // std::cout << "Loop: " << i << std::endl;
 
-        data = t.read(-5);
+        data = t->read(-5);
         std::istringstream iss(data.second);
         std::vector<std::string> tokens {
             std::istream_iterator<std::string> { iss },
@@ -146,13 +147,30 @@ void* octopOS::listen_for_child(void* msgkey) {
                 return_data = octopOS::getInstance().create_new_topic(tokens[2],
                     std::stoi(tokens[1]));
                 std::stringstream ss;
-                ss << return_data.first << " " << return_data.second << " 1264";
-                t.write(std::stoi(tokens[0]), ss.str());
+                ss << return_data.first << " " << return_data.second << " "
+                   << std::to_string(get_id(tentacle::role_t::PUBLISHER));
+                t->write(std::stoi(tokens[0]), ss.str());
                 break;
             }
             case PUBLISH_CODE: {
                 octopOS::getInstance().propagate_to_subscribers(tokens[0]);
-                std::cout << "I'm a good publisher! " << std::endl;
+                // std::cout << "I'm a good publisher! " << std::endl;
+                break;
+            }
+            case CREATE_SUB: {
+                octopOS_id_t id = get_id(tentacle::role_t::SUBSCRIBER);
+                std::pair<unsigned, key_t> response = octopOS::getInstance().subscribe_to_topic(
+                    tokens[2],
+                    *(int*)tentacle_id,
+                    id,
+                    std::stoi(tokens[1])
+                );
+
+                t->write(std::stoi(tokens[0]),
+                        std::to_string(response.first)+" "+
+                        std::to_string(response.second)+" "+
+                        std::to_string(id));
+                // std::cout << "I'm a good subscriber!" << std::endl;
                 break;
             }
             case 4: {
@@ -163,7 +181,7 @@ void* octopOS::listen_for_child(void* msgkey) {
                 break;
             }
             default:
-                std::cout << "you fucked up" << std::endl;
+                std::cout << "you messed up: " << data.first << std::endl;
         }
     }
 
@@ -179,16 +197,18 @@ bool octopOS::propagate_to_subscribers(std::string name) {
     auto tmp = topic_data.find(name);
     if (tmp != topic_data.end()) {
         message_buffer my_buffer;
-        my_buffer.type = 4;
         strncpy(my_buffer.text, name.c_str(), name.size());
         my_buffer.text[name.size()] = '\0';
         for (auto i : std::get<2>(tmp->second)) {
-            std::cout << "Test: " << i.first << " " << i.second << std::endl;
-            tenticles[i.first]->write(SUBCHANNEL, std::to_string(i.second));
+            tentacles[i.second]->write(i.first, "Hello World");
+            // std::cout << "I'm going to alert: " << i.first << " " << i.second << std::endl;
 
-            std::cout << "Propagating: " << name << ", " << i.first << std::endl;
+            // std::cout << "Test: " << i.first << " " << i.second << std::endl;
+            // tentacles[i.first]->write(SUBCHANNEL, std::to_string(i.second));
+            //
+            // std::cout << "Propagating: " << name << ", " << i.first << std::endl;
         }
-        std::cout << "\tData: " << shared_ptr[1] << std::endl;
+        // std::cout << "\tData: " << shared_ptr[1] << std::endl;
         return_value = true;
     }
 
@@ -197,24 +217,25 @@ bool octopOS::propagate_to_subscribers(std::string name) {
     return return_value;
 }
 
-long octopOS::subscribe_to_topic(std::string name,
-    unsigned tenticle, long message_id, long size) {
-    long return_value = -1;
+std::pair<unsigned, key_t> octopOS::subscribe_to_topic(std::string name,
+    unsigned tentacle, octopOS_id_t subscriber_id, long size) {
+    std::pair<unsigned, key_t> return_value(0, 0);
 
     topic_reader_in();
 
-    auto tmp = topic_data.find(name);
+    auto current_topic_data = topic_data.find(name);
 
     topic_reader_out();
-    if (tmp != topic_data.end()) {
+    if (current_topic_data != topic_data.end()) {
         topic_writer_in();
-        // std::get<2>(tmp->second).push_back(
-        //     std::pair<unsigned, long>(tenticle, message_id));
+        std::get<2>(current_topic_data->second).push_back(
+            std::pair<octopOS_id_t, unsigned>(subscriber_id, tentacle));
         topic_writer_out();
-        return_value = std::get<0>(tmp->second);
+        return_value.first = std::get<0>(current_topic_data->second);
+        return_value.second = std::get<1>(current_topic_data->second);
     } else if (size >= 0){
-        return_value = create_new_topic(name, size).first;
-        subscribe_to_topic(name, tenticle, message_id, size);
+        create_new_topic(name, size).first;
+        return_value = subscribe_to_topic(name, tentacle, subscriber_id, size);
     }
 
     return return_value;
@@ -256,6 +277,30 @@ void octopOS::topic_writer_out() {
     topic_data_wrlock.unlock();
 }
 
+long octopOS::get_id(tentacle::role_t role) {
+    static long id_count = 100;
+    static std::mutex id_lock;
+    long return_value;
+
+    id_lock.lock();
+    if ((return_value = id_count++) > 0x1fffffff) {
+        id_lock.unlock();
+        throw std::overflow_error("Id space has been exhausted!");
+        // TODO If this happens all hope is lost. Kill everything and start over.
+    }
+    id_lock.unlock();
+
+    switch (role) {
+      default:
+        break;
+      case tentacle::role_t::SUBSCRIBER:
+        return_value |= SUB_BIT;
+        break;
+    }
+
+    return return_value;
+}
+
 octopOS::~octopOS() {
     try  {
         sig_handler(0);
@@ -266,12 +311,12 @@ octopOS::~octopOS() {
 }
 
 int octopOS::shmid = 0;
-int octopOS::tenticle_ids[NUMMODULES];
-tenticle* octopOS::tenticles[NUMMODULES];
+int octopOS::tentacle_ids[NUMMODULES];
+std::vector<std::shared_ptr<tentacle>> octopOS::tentacles;
 std::vector<int> octopOS::semids;
 intptr_t *octopOS::shared_ptr, *octopOS::shared_end_ptr;
 std::map<std::string, std::tuple<unsigned, key_t,
-    std::vector<std::pair<unsigned, long>>>> octopOS::topic_data;
+    std::vector<std::pair<octopOS_id_t, unsigned>>>> octopOS::topic_data;
 std::mutex octopOS::topic_data_rdlock, octopOS::topic_data_rdtry,
     octopOS::topic_data_wrlock, octopOS::topic_data_lock;
 unsigned octopOS::topic_data_readers = 0, octopOS::topic_data_writers = 0;

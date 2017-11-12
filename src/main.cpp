@@ -1,7 +1,7 @@
 #include "octopos.h"
-#include "tenticle.h"
+#include "tentacle.h"
 
-//#include "subscriber.h" PLEASE DONT FORGET ME
+#include "subscriber.h" // PLEASE DONT FORGET ME
 #include "publisher.h"
 
 #include <sys/types.h>
@@ -34,33 +34,40 @@ int main(int argc, char const *argv[]) {
             std::to_string(MSGKEY).c_str(), (char*)0);
     }
 */
-    int x = MSGKEY;
-    pthread_t tmp;
+    int x = 0;
+    pthread_t tmp, subThread;
 
     if (pthread_create(&tmp, NULL, octopOS::listen_for_child, &x)) {
         exit(-1);
     }
 
-    octopOS::getInstance().subscribe_to_topic("test", 0, 12234, sizeof(int));
+    if (pthread_create(&subThread, NULL, subscriber_manager::wait_for_data, &x)) {
+        exit(-1);
+    }
 
 /*
     // test.write(1, "This is a test string");
     // sleep(1);
 
-    // tenticle test(MSGKEY);
+    // tentacle test(MSGKEY);
     subscriber<int> sub("test", MSGKEY);
     // std::cout << sub.listen_to_topic(4) << std::endl;
     // std::cout << test.read(4).second << std::endl;
 
 */
-    publisher<int> pub("test", x);
 
-    pub.publish(0666);
+    subscriber<int> sub("test", MSGKEY);
+
+    publisher<int> pub("test", MSGKEY);
+
+    pub.publish(578);
 
     if(pthread_join(tmp, NULL)) {
         fprintf(stderr, "Error joining thread\n");
         return 2;
     }
+
+    std::cout << "Data: " << sub.get_data() << std::endl;
     /*
 
     wait(NULL);

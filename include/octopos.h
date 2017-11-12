@@ -13,9 +13,10 @@
 #include <sstream>
 #include <algorithm>
 #include <iterator>
+#include <memory>
 
 #include "utility.h"
-#include "tenticle.h"
+#include "tentacle.h"
 
 class octopOS {
 public:
@@ -33,24 +34,28 @@ public:
     static void* listen_for_child(void* msgkey);
 
     bool propagate_to_subscribers(std::string name);
-    long subscribe_to_topic(std::string name,
-        unsigned tenticle, long message_id, long size = -1);
+    std::pair<unsigned, key_t> subscribe_to_topic(std::string name,
+        unsigned tentacle, octopOS_id_t subscriber_id, long size = -1);
 
     static void sig_handler(int sig);
 private:
-    static int shmid, tenticle_ids[NUMMODULES];
-    static tenticle* tenticles[NUMMODULES];
+    static long get_id(tentacle::role_t role);
+
+    static int shmid, tentacle_ids[NUMMODULES];
+    static std::vector<std::shared_ptr<tentacle>> tentacles;
     static std::vector<int> semids;
     static intptr_t *shared_ptr, *shared_end_ptr;
 
   // topic_data: map[topic name, TopicInfo]
   // TopicInfo := (offset into shared mem,
-  //               reference to shared mem (also a pointer),
-  //               array of subscribers)
+  //               reference to shared mem (also a pointer) [ I think it is the semkey],
+  //               array of subscribers
+  //                 1. topic ID
+  //                 2. tentacle ID)
     static std::map<std::string,
 	           std::tuple<unsigned,
 			                  key_t,
-			                  std::vector<std::pair<unsigned, long>>
+			                  std::vector<std::pair<octopOS_id_t, unsigned>>
                         >
                    > topic_data;
 

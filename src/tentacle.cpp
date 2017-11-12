@@ -1,6 +1,6 @@
-#include "tenticle.h"
+#include "tentacle.h"
 
-tenticle::tenticle(key_t msg_key) {
+tentacle::tentacle(key_t msg_key) {
     if ((message_que = msgget(msg_key, 0600)) < 0 ) {
         throw std::system_error(
             errno,
@@ -13,33 +13,35 @@ tenticle::tenticle(key_t msg_key) {
             throw std::system_error(
                 errno,
                 std::generic_category(),
-                "Unable to connect tenticle to shm_object"
+                "Unable to connect tentacle to shm_object"
             );
         }
 }
 
-std::pair<long, std::string> tenticle::read(long type, bool block) {
+std::pair<long, std::string> tentacle::read(long type, bool block, bool under) {
     message_buffer my_buffer;
     std::pair<long, std::string> return_value(0, "");
     int rc;
 
-    // type *= (under)? -1 : 1;
+    type *= (under)? -1 : 1;
 
-    if (!block)
+    if (!block) {
         rc = msgrcv(message_que, &my_buffer,
             sizeof(my_buffer.text), type, IPC_NOWAIT); // ADD THE ONLY UNDER STUFF HERE
+    }
     else
         rc = msgrcv(message_que, &my_buffer,
             sizeof(my_buffer.text), type, 0); // AND HERE TOO PLZ
 
     if (rc >= 0) {
-        return_value.first = (!block)? 1 : my_buffer.type;
+        return_value.first = my_buffer.type;
         return_value.second = my_buffer.text;
+        // std::cout << "I'm RC: " << my_buffer.type << std::endl;
     }
     return return_value;
 }
 
-bool tenticle::write(long type, std::string data) {
+bool tentacle::write(long type, std::string data) {
     message_buffer my_buffer;
     bool return_value = false;
 
@@ -57,11 +59,11 @@ bool tenticle::write(long type, std::string data) {
     return return_value;
 }
 
-bool tenticle::write(std::pair<long, std::string> pair) {
+bool tentacle::write(std::pair<long, std::string> pair) {
     return write(pair.first, pair.second);
 }
 
-long tenticle::getTempId(role_t role) {
+long tentacle::getTempId(role_t role) {
     long return_value = 0;
     static ushort rand_seed[3] = { 0 };
 
@@ -84,7 +86,7 @@ long tenticle::getTempId(role_t role) {
     return return_value;
 }
 
-void tenticle::initRand(ushort *rand_seed) {
+void tentacle::initRand(ushort *rand_seed) {
     struct timeval rand_time;
     gettimeofday(&rand_time, (struct timezone*)NULL);
 
@@ -95,6 +97,7 @@ void tenticle::initRand(ushort *rand_seed) {
     return; // NOT SURE IF WE WANT LATER : rand_seed;
 }
 
-std::mutex tenticle::id_lock;
-int tenticle::id = 0;
-intptr_t* tenticle::shared_data = NULL;
+std::mutex tentacle::id_lock;
+int tentacle::id = 0;
+intptr_t* tentacle::shared_data = NULL;
+int tentacle::message_que;

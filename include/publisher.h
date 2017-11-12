@@ -8,20 +8,19 @@
 #include <iterator>
 #include <utility>
 
-#include "tenticle.h"
-
-#include <iostream>
+#include "tentacle.h"
 
 template <typename T>
-class publisher : public tenticle {
+class publisher : public tentacle {
 public:
     publisher(std::string _name, key_t message_key):
-        tenticle(message_key), name(_name) {
-        id = getTempId(tenticle::role_t::PUBLISHER);
+        tentacle(message_key), name(_name) {
+        id = getTempId(tentacle::role_t::PUBLISHER);
 
         write(CREATE_PUB, std::to_string(id)+" "+std::to_string(sizeof(T))+" "+name);
 
         std::pair<long, std::string> response;
+
         response = read(id);
 
         std::istringstream iss(response.second);

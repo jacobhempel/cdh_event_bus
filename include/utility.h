@@ -27,6 +27,11 @@ const long TEMP_BIT = 0x40000000;
 
 const long CREATE_PUB = 1;
 const long PUBLISH_CODE = 2;
+const long CREATE_SUB = 3;
+
+typedef intptr_t generic_t;
+typedef long octopOS_id_t;
+typedef uint sem_id_t;
 
 typedef struct {
     unsigned rw_array[2];
