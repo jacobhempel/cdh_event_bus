@@ -1,0 +1,17 @@
+# Ubuntu 14.04 Trusty support
+sudo: required
+dist: trusty
+
+# Enable C++ support
+language: cpp
+# Compiler selection
+compiler:
+  - clang
+  - gcc
+# Build steps
+script:
+  - cd build
+  - cmake .. && make
+  - make test
+  - cd .. && git clone "https://github.com/SpaceHAUC-Command-and-Data-Handling/Powerlint.git" && export PATH=$PATH:. && mv ./Powerlint/* ./
+  - wget "https://raw.githubusercontent.com/SpaceHAUC-Command-and-Data-Handling/git_hooks/master/hooks/check-style" && chmod +x ./check-style && ./check-style
