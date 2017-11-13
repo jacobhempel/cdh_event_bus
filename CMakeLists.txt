@@ -1,19 +1,64 @@
-cmake_minimum_required (VERSION 2.8.12.2)
+#include(BoostTestHelpers)
 
 # Change project name to desired name
-set (PROJECT_NAME "octopOS")
 
+
+# add_boost_test(SomeUnitTests.cpp my_library)
+
+# Find the boost unit testing library
+# find_package(Boost COMPONENTS unit_test_framework REQUIRED)
+
+# Change name of executable to desired name
+
+
+# include directory for headers
+#include_directories(include)
+
+############################ Actually in Use ###################################
+cmake_minimum_required (VERSION 2.8.12.2)
+
+# Set base project details
+set (PROJECT_NAME "octopOS")
 project (${PROJECT_NAME})
 
 set(CMAKE_CXX_FLAGS "-std=c++11 -g -Wall")
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/library")
 
-# include directory for headers
-include_directories(include)
+# Create subscriber library
+file(GLOB SubscriberSrc include/subscriber.h
+                       include/tentacle.h
+                       include/utility.h
+                       src/subscriber.cpp
+                       src/tentacle.cpp
+                       src/utility.cpp)
+add_library(Subscriber SHARED ${SubscriberSrc})
+target_include_directories (Subscriber PUBLIC include src)
 
-file(GLOB SOURCES "src/*.cpp")
+# Create publisher library
+file(GLOB PublisherSrc include/publisher.h
+                       include/tentacle.h
+                       include/utility.h
+                       src/tentacle.cpp
+                       src/utility.cpp)
+add_library(Publisher SHARED ${PublisherSrc})
+target_include_directories (Publisher PUBLIC include src)
 
-# Change name of executable to desired name
+# Create octopOS library
+file(GLOB OctopOSSrc include/octopos.h
+                     include/tentacle.h
+                     include/utility.h
+                     src/octopos.cpp
+                     src/tentacle.cpp
+                     src/utility.cpp)
+add_library(OctopOS SHARED ${OctopOSSrc})
+target_include_directories (OctopOS PUBLIC include src)
+
+# Get remaining source files
+file(GLOB SOURCES "src/main.cpp")
+
+#### Compile Main Executable ####
+# setup base executable
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 # Check if pthreads.h is being used
@@ -22,5 +67,37 @@ if(THREADS_HAVE_PTHREAD_ARG)
   target_compile_options(PUBLIC ${PROJECT_NAME} "-pthread")
 endif()
 if(CMAKE_THREAD_LIBS_INIT)
-  target_link_libraries(${PROJECT_NAME} "${CMAKE_THREAD_LIBS_INIT}" ${Boost_LIBRARIES})
+  target_link_libraries(${PROJECT_NAME} "${CMAKE_THREAD_LIBS_INIT}" ${Boost_LIBRARIES} Subscriber OctopOS Publisher)
 endif()
+
+#### Compile Unit Tests ####
+enable_testing()
+
+get_filename_component(TEST_EXECUTABLE_NAME tests/test_octopOS.cpp NAME_WE)
+
+# Get Boost libraries
+find_package(Boost COMPONENTS unit_test_framework REQUIRED)
+include_directories (${Boost_INCLUDE_DIRS})
+
+add_executable(${TEST_EXECUTABLE_NAME} tests/test_octopOS.cpp)
+
+find_package(Threads REQUIRED)
+if(THREADS_HAVE_PTHREAD_ARG)
+  target_compile_options(PUBLIC ${PROJECT_NAME} "-pthread")
+endif()
+if(CMAKE_THREAD_LIBS_INIT)
+target_link_libraries(${TEST_EXECUTABLE_NAME} "${CMAKE_THREAD_LIBS_INIT}"
+    ${Boost_LIBRARIES} OctopOS Publisher Subscriber)
+endif()
+
+file(READ tests/test_octopOS.cpp SOURCE_FILE_CONTENTS)
+string(REGEX MATCHALL "BOOST_AUTO_TEST_CASE\\( *([A-Za-z_0-9]+) *\\)"
+       FOUND_TESTS ${SOURCE_FILE_CONTENTS})
+
+foreach(HIT ${FOUND_TESTS})
+    string(REGEX REPLACE ".*\\( *([A-Za-z_0-9]+) *\\).*" "\\1" TEST_NAME ${HIT})
+
+    add_test(NAME "${TEST_EXECUTABLE_NAME}.${TEST_NAME}"
+        COMMAND ${TEST_EXECUTABLE_NAME}
+        --run_test=${TEST_NAME} --catch_system_error=yes)
+endforeach()

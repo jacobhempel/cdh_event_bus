@@ -1,3 +1,6 @@
+/*!
+ * @file
+ */
 #ifndef INCLUDE_PUBLISHER_H
 #define INCLUDE_PUBLISHER_H
 
@@ -10,9 +13,19 @@
 
 #include "tentacle.h"
 
+/*!
+ * This class is used to publish data to a topic specified on construction. The
+ * template parameter is the data type of the topic. Inherites from tentacle
+ * for IPC communication.
+ */
 template <typename T>
 class publisher : public tentacle {
 public:
+    /*!
+     * creates a publisher object and registers it with octopOS.
+     * @param _name The name of the topic to publish to.
+     * @param message_key The key for the message bus to create a tentacle on.
+     */
     publisher(std::string _name, key_t message_key):
         tentacle(message_key), name(_name) {
         id = getTempId(tentacle::role_t::PUBLISHER);
@@ -40,12 +53,18 @@ public:
         id = std::stoi(tokens[2]);
     }
 
+    /*!
+     * Updates data in shared memory segment, then tells octopOS to notify
+     * subscribers of the newly published data.
+     * @param data The data to be published
+     * @return true if data published successfully otherwise false.
+     */
     bool publish(T data) {
         bool return_value = false;
         if (p(semid, 1) >= 0) {
             rw->rw_array[1] += 1;
             if (rw->rw_array[1] == 1) {
-                p(semid, 3);  // Should check for success
+                p(semid, 3);  // TODO check for success
             }
 
             v(semid, 1);
@@ -61,16 +80,22 @@ public:
         if (p(semid, 1) >= 0) {
             rw->rw_array[1] -= 1;
             if (rw->rw_array[1] == 0)
-                v(semid, 3);  // Should check for success
+                v(semid, 3);  // TODO check for success
             v(semid, 1);
         }
         return return_value;
     }
 private:
+    /*! unique identifier of publisher */
     long id;
+    /*! name of topic to publish to */
     std::string name;
+    /*! id of semaphore controlling shared data lock */
     int semid;
+    /*! pointer to reader writer pointers for data access controll in shared
+       memory. */
     shm_object* rw;
+    /*! pointer to shared data struct */
     T* data_ptr;
 };
 

@@ -1,11 +1,9 @@
+/*!
+ * @file
+ */
 #include "octopos.h"
 
-#include <unordered_map>
-#include <string.h>
-
-#include <unistd.h>
-
-// This signal handler is garbage
+// TODO streamline this
 void octopOS::sig_handler(int sig) {
     if (shmctl(shmid, IPC_RMID, 0) < 0) {
         if (sig < 0)
@@ -38,7 +36,6 @@ void octopOS::sig_handler(int sig) {
     }
 }
 
-// initialize the thing
 octopOS::octopOS() {
     int signals[] = {SIGHUP, SIGINT, SIGQUIT, SIGBUS, SIGTERM, SIGSEGV, SIGFPE};
     unsigned num_signals = sizeof(signals) / sizeof(int);
@@ -125,13 +122,11 @@ std::pair<unsigned, key_t> octopOS::create_new_topic
     return return_value;
 }
 
-// signature looks like this to make pthreads (and lukas) happy
 void* octopOS::listen_for_child(void* tentacle_id) {
     std::shared_ptr<tentacle> t = tentacles[*(int*)tentacle_id];
 
     std::pair<long, std::string> data;
     for (unsigned i = 0; i < 3; ++i) {
-        // std::cout << "Loop: " << i << std::endl;
 
         data = t->read(-5);
         std::istringstream iss(data.second);
@@ -154,7 +149,6 @@ void* octopOS::listen_for_child(void* tentacle_id) {
             }
             case PUBLISH_CODE: {
                 octopOS::getInstance().propagate_to_subscribers(tokens[0]);
-                // std::cout << "I'm a good publisher! " << std::endl;
                 break;
             }
             case CREATE_SUB: {
@@ -170,18 +164,10 @@ void* octopOS::listen_for_child(void* tentacle_id) {
                         std::to_string(response.first)+" "+
                         std::to_string(response.second)+" "+
                         std::to_string(id));
-                // std::cout << "I'm a good subscriber!" << std::endl;
-                break;
-            }
-            case 4: {
-                // for (auto k : tokens) {
-                //     std::cout << k << " ";
-                // }
-                // std::cout << std::endl;
                 break;
             }
             default:
-                std::cout << "you messed up: " << data.first << std::endl;
+                throw std::runtime_error("Unexpected message on tenticale!");
         }
     }
 
@@ -200,15 +186,8 @@ bool octopOS::propagate_to_subscribers(std::string name) {
         strncpy(my_buffer.text, name.c_str(), name.size());
         my_buffer.text[name.size()] = '\0';
         for (auto i : std::get<2>(tmp->second)) {
-            tentacles[i.second]->write(i.first, "Hello World");
-            // std::cout << "I'm going to alert: " << i.first << " " << i.second << std::endl;
-
-            // std::cout << "Test: " << i.first << " " << i.second << std::endl;
-            // tentacles[i.first]->write(SUBCHANNEL, std::to_string(i.second));
-            //
-            // std::cout << "Propagating: " << name << ", " << i.first << std::endl;
+            tentacles[i.second]->write(i.first, "ping");
         }
-        // std::cout << "\tData: " << shared_ptr[1] << std::endl;
         return_value = true;
     }
 
@@ -286,7 +265,7 @@ long octopOS::get_id(tentacle::role_t role) {
     if ((return_value = id_count++) > 0x1fffffff) {
         id_lock.unlock();
         throw std::overflow_error("Id space has been exhausted!");
-        // TODO If this happens all hope is lost. Kill everything and start over.
+        // If this happens all hope is lost. Kill everything and start over.
     }
     id_lock.unlock();
 
@@ -315,7 +294,7 @@ int octopOS::tentacle_ids[NUMMODULES];
 std::vector<std::shared_ptr<tentacle>> octopOS::tentacles;
 std::vector<int> octopOS::semids;
 intptr_t *octopOS::shared_ptr, *octopOS::shared_end_ptr;
-std::map<std::string, std::tuple<unsigned, key_t,
+std::unordered_map<std::string, std::tuple<unsigned, key_t,
     std::vector<std::pair<octopOS_id_t, unsigned>>>> octopOS::topic_data;
 std::mutex octopOS::topic_data_rdlock, octopOS::topic_data_rdtry,
     octopOS::topic_data_wrlock, octopOS::topic_data_lock;

@@ -43,19 +43,6 @@ bool subscriber_manager::register_cb(callback cb, std::string topic, uint size, 
     return true;
 }
 
-// for (auto topic_callbacks : registered_callbacks) {
-//     auto topic = topic_callbacks.key;
-//     auto callbacks = topic_callbacks.value
-
-//         key_t memory = topic_memory[topic];
-//         std::pair<bool, std::string> message = read(topic_ids[topic], true);
-//         if (message.first) {
-//   	        for (auto cb: callbacks) {
-//   	            //cb(message.second);
-//   	        }
-//         }
-// }
-
 //TODO implemnt reader writter for callback list
 void* subscriber_manager::wait_for_data(void* data) {
     while (true) {
@@ -78,15 +65,13 @@ void* subscriber_manager::wait_for_data(void* data) {
     }
 }
 
-// A map
-std::map<std::string, std::tuple<sem_id_t, shm_object*, generic_t*>> subscriber_manager::topic_memory =
-  std::map<std::string, std::tuple<sem_id_t, shm_object*, generic_t*>>();
+std::unordered_map<std::string, std::tuple<sem_id_t, shm_object*, generic_t*>> subscriber_manager::topic_memory =
+  std::unordered_map<std::string, std::tuple<sem_id_t, shm_object*, generic_t*>>();
 
-std::map<std::string, octopOS_id_t> subscriber_manager::topic_ids =
-  std::map<std::string, octopOS_id_t>();
+std::unordered_map<std::string, octopOS_id_t> subscriber_manager::topic_ids =
+  std::unordered_map<std::string, octopOS_id_t>();
 
-// A map from topics to registered callbacks
-std::map<std::string, std::vector<callback> > subscriber_manager::registered_callbacks =
-  std::map<std::string, std::vector<callback> >();
+std::unordered_map<std::string, std::vector<callback> > subscriber_manager::registered_callbacks =
+  std::unordered_map<std::string, std::vector<callback> >();
 
 std::mutex subscriber_manager::topic_ids_lock, subscriber_manager::topic_memory_lock, subscriber_manager::registered_callbacks_lock;
