@@ -1,4 +1,8 @@
 // Copyright 2017 Space HAUC Command and Data Handling
+// This file is part of octopOS which is released under AGPLv3.
+// See file LICENSE.txt or go to <http://www.gnu.org/licenses/> for full
+// license details.
+
 /*!
  * @file
  */

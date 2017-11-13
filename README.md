@@ -1,5 +1,7 @@
-[![Build Status](https://travis-ci.org/SpaceHAUC-Command-and-Data-Handling/OctopOS.svg?branch=master)](https://travis-ci.org/SpaceHAUC-Command-and-Data-Handling/OctopOS?branch=master) [![codecov](https://codecov.io/gh/SpaceHAUC-Command-and-Data-Handling/OctopOS/branch/master/graph/badge.svg)](https://codecov.io/gh/SpaceHAUC-Command-and-Data-Handling/OctopOS)
+[![Build Status](https://travis-ci.org/SpaceHAUC-Command-and-Data-Handling/OctopOS.svg?branch=master&style=flat)](https://travis-ci.org/SpaceHAUC-Command-and-Data-Handling/OctopOS?branch=master) [![codecov](https://codecov.io/gh/SpaceHAUC-Command-and-Data-Handling/OctopOS/branch/master/graph/badge.svg?style=flat)](https://codecov.io/gh/SpaceHAUC-Command-and-Data-Handling/OctopOS) [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg?style=flat)](https://github.com/SpaceHAUC-Command-and-Data-Handling/OctopOS/blob/master/LICENSE.txt) [![release](http://github-release-version.herokuapp.com/github/SpaceHAUC-Command-and-Data-Handling/OctopOS/release.svg?style=flat)](https://github.com/allure-framework/allure-core/releases/latest)
+
 # OctopOS
+
 A simple data bus for subsystem communication.
 
 ## Introduction
