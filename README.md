@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/SpaceHAUC-Command-and-Data-Handling/OctopOS.svg?branch=octopOS_2.0)](https://travis-ci.org/SpaceHAUC-Command-and-Data-Handling/OctopOS)
 # OctopOS
 A simple data bus for subsystem communication.
 
