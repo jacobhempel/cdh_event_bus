@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['message_5fque',['message_que',['../classtentacle.html#a04aaacfa1b8d295e1ce986fc04bf8757',1,'tentacle']]]
+  ['create_5fpub',['CREATE_PUB',['../utility_8h.html#aaf4deabee52f8c6a4ee41eb41e597962',1,'utility.h']]],
+  ['create_5fsub',['CREATE_SUB',['../utility_8h.html#ac4641c1924225be4383624afda7a4504',1,'utility.h']]]
 ];

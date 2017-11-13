@@ -1,22 +1,24 @@
+// Copyright 2017 Space HAUC Command and Data Handling
 /*!
  * @file
  */
-#ifndef INCLUDE_OCTOPOS_H
-#define INCLUDE_OCTOPOS_H
+#ifndef INCLUDE_OCTOPOS_H_
+#define INCLUDE_OCTOPOS_H_
 
 #include <signal.h>
 
 #include <unordered_map>
-#include <mutex>
+#include <mutex>                                                                  // NOLINT
 #include <string>
 #include <vector>
 #include <tuple>
 #include <sstream>
 #include <iterator>
 #include <memory>
+#include <utility>
 
-#include "utility.h"
-#include "tentacle.h"
+#include "../include/utility.h"
+#include "../include/tentacle.h"
 
 /*!
  * octopOS is the main control class. It is singleton so there can only ever be
@@ -25,7 +27,7 @@
  * octopOS will free these resources befor terminating the program
  */
 class octopOS {
-public:
+ public:
     /*!
      * getInstance returns a reference to the single static instance of octopOS.
      * @return reference to running octopOS instance
@@ -92,7 +94,7 @@ public:
      * semaphore
      */
     std::pair<unsigned, key_t> subscribe_to_topic(std::string name,
-        unsigned tentacle, octopOS_id_t subscriber_id, long size = -1);
+        unsigned tentacle, octopOS_id_t subscriber_id, long size = -1);           // NOLINT
 
     /*!
      * sig_handler provides a signal handler to clean up persistant resources
@@ -100,15 +102,15 @@ public:
      * @param sig The number identifier of the signal caught
      */
     static void sig_handler(int sig);
-private:
 
+ private:
     /*!
      * get_id generates a unique identifier based off the role (publiser or
      * subscriber) of the caller.
      * @param role The role of the caller
      * @return uniqie identifier
      */
-    static long get_id(tentacle::role_t role);
+    static long get_id(tentacle::role_t role);                                    // NOLINT
 
     /*!
      * cheacks in a reader for topic_data
@@ -154,9 +156,9 @@ private:
      *      2. tentacle ID
      */
     static std::unordered_map<std::string,
-	           std::tuple<unsigned,
-			                  key_t,
-			                  std::vector<std::pair<octopOS_id_t, unsigned>>
+               std::tuple<unsigned,
+                      key_t,
+                      std::vector<std::pair<octopOS_id_t, unsigned>>
                         >
                    > topic_data;
 
@@ -173,4 +175,4 @@ private:
     octopOS();
 };
 
-#endif  // INCLUDE_OCTOPOS_H
+#endif  // INCLUDE_OCTOPOS_H_

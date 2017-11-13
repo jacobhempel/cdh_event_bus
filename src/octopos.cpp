@@ -1,26 +1,32 @@
+// Copyright 2017 Space HAUC Command and Data Handling
 /*!
  * @file
  */
-#include "octopos.h"
+#include <string>
+#include <unordered_map>
+#include <tuple>
+#include <memory>
+#include <utility>
+#include <vector>
 
-// TODO streamline this
+#include "../include/octopos.h"
+
+// TODO(JoshuaHassler) streamline this
 void octopOS::sig_handler(int sig) {
     if (shmctl(shmid, IPC_RMID, 0) < 0) {
         if (sig < 0)
             throw std::system_error(
                 errno,
                 std::generic_category(),
-                "Unable to remove shared memory segment"
-            );
+                "Unable to remove shared memory segment");
     }
     for (auto i : semids) {
-        if(semctl(i, 0, IPC_RMID) < 0) {
+        if (semctl(i, 0, IPC_RMID) < 0) {
             if (sig < 0)
                 throw std::system_error(
                     errno,
                     std::generic_category(),
-                    "Unable to remove semaphores"
-                );
+                    "Unable to remove semaphores");
         }
     }
     for (unsigned i = 0; i < NUMMODULES; ++i) {
@@ -30,8 +36,7 @@ void octopOS::sig_handler(int sig) {
                 throw std::system_error(
                     errno,
                     std::generic_category(),
-                    "Unable to remove tentacle"
-                );
+                    "Unable to remove tentacle");
         }
     }
 }
@@ -53,19 +58,17 @@ octopOS::octopOS() {
             throw std::system_error(
                 errno,
                 std::generic_category(),
-                "Unable to set signal handler"
-            );
+                "Unable to set signal handler");
     }
 
     if ((shmid = shmget(MEMKEY, SHMSIZE, IPC_CREAT | 0600)) < 0) {
         throw std::system_error(
             errno,
             std::generic_category(),
-            "Unable to create shared memory segment"
-        );
+            "Unable to create shared memory segment");
     }
 
-    if ((shared_ptr = (intptr_t*)shmat(shmid, NULL, 0)) < (intptr_t*)0) {
+    if ((shared_ptr = (intptr_t*)shmat(shmid, NULL, 0)) < (intptr_t*)0) {         // NOLINT
         std::cerr << "Unable to attach shared memory segment: "
             << errno << std::endl;
         sig_handler(-1);
@@ -78,10 +81,10 @@ octopOS::octopOS() {
             throw std::system_error(
                 errno,
                 std::generic_category(),
-                "Unable to create message queues"
-            );
+                "Unable to create message queues");
         } else {
-            tentacles.push_back(std::make_shared<tentacle>(tentacle(MSGKEY + i)));
+            tentacles.push_back(std::make_shared<tentacle>(
+                tentacle(MSGKEY + i)));
         }
     }
 
@@ -108,10 +111,11 @@ std::pair<unsigned, key_t> octopOS::create_new_topic
                 return_value.first = shared_end_ptr - shared_ptr;
                 return_value.second = SEMKEY+semids.size();
                 semids.push_back(my_sem);
-                shm_object* init = (shm_object*)shared_end_ptr;
+                shm_object* init = (shm_object*)shared_end_ptr;                   // NOLINT
                 init->rw_array[0] = init->rw_array[1] = 0;
                 shared_end_ptr +=
-                    (size + sizeof(shm_object)) / sizeof(intptr_t) + 1;  // This size calculation has extra padding
+                    (size + sizeof(shm_object)) / sizeof(intptr_t) + 1;
+                // This size calculation has extra padding
         }
     } else {
         return_value.first = std::get<0>(tmp->second);
@@ -123,11 +127,10 @@ std::pair<unsigned, key_t> octopOS::create_new_topic
 }
 
 void* octopOS::listen_for_child(void* tentacle_id) {
-    std::shared_ptr<tentacle> t = tentacles[*(int*)tentacle_id];
+    std::shared_ptr<tentacle> t = tentacles[*(int*)tentacle_id];                  // NOLINT
 
-    std::pair<long, std::string> data;
+    std::pair<long, std::string> data;                                            // NOLINT
     for (unsigned i = 0; i < 3; ++i) {
-
         data = t->read(-5);
         std::istringstream iss(data.second);
         std::vector<std::string> tokens {
@@ -135,7 +138,7 @@ void* octopOS::listen_for_child(void* tentacle_id) {
             std::istream_iterator<std::string>{}
         };
 
-        switch(data.first) {
+        switch (data.first) {
             case CREATE_PUB: {
                 std::pair<unsigned, key_t> return_data;
 
@@ -153,12 +156,12 @@ void* octopOS::listen_for_child(void* tentacle_id) {
             }
             case CREATE_SUB: {
                 octopOS_id_t id = get_id(tentacle::role_t::SUBSCRIBER);
-                std::pair<unsigned, key_t> response = octopOS::getInstance().subscribe_to_topic(
-                    tokens[2],
-                    *(int*)tentacle_id,
-                    id,
-                    std::stoi(tokens[1])
-                );
+                std::pair<unsigned, key_t> response =
+                    octopOS::getInstance().subscribe_to_topic(
+                        tokens[2],
+                        *(int*)tentacle_id,                                       // NOLINT
+                        id,
+                        std::stoi(tokens[1]));
 
                 t->write(std::stoi(tokens[0]),
                         std::to_string(response.first)+" "+
@@ -172,7 +175,6 @@ void* octopOS::listen_for_child(void* tentacle_id) {
     }
 
     return NULL;
-
 }
 
 bool octopOS::propagate_to_subscribers(std::string name) {
@@ -197,7 +199,7 @@ bool octopOS::propagate_to_subscribers(std::string name) {
 }
 
 std::pair<unsigned, key_t> octopOS::subscribe_to_topic(std::string name,
-    unsigned tentacle, octopOS_id_t subscriber_id, long size) {
+    unsigned tentacle, octopOS_id_t subscriber_id, long size) {                   // NOLINT
     std::pair<unsigned, key_t> return_value(0, 0);
 
     topic_reader_in();
@@ -212,7 +214,7 @@ std::pair<unsigned, key_t> octopOS::subscribe_to_topic(std::string name,
         topic_writer_out();
         return_value.first = std::get<0>(current_topic_data->second);
         return_value.second = std::get<1>(current_topic_data->second);
-    } else if (size >= 0){
+    } else if (size >= 0) {
         create_new_topic(name, size).first;
         return_value = subscribe_to_topic(name, tentacle, subscriber_id, size);
     }
@@ -256,10 +258,10 @@ void octopOS::topic_writer_out() {
     topic_data_wrlock.unlock();
 }
 
-long octopOS::get_id(tentacle::role_t role) {
-    static long id_count = 100;
+long octopOS::get_id(tentacle::role_t role) {                                     // NOLINT
+    static long id_count = 100;                                                   // NOLINT
     static std::mutex id_lock;
-    long return_value;
+    long return_value;                                                            // NOLINT
 
     id_lock.lock();
     if ((return_value = id_count++) > 0x1fffffff) {

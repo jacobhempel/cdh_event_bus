@@ -8,6 +8,8 @@ language: cpp
 compiler:
   - clang
   - gcc
+before_install:
+  - sudo apt install libboost-all-dev
 # Build steps
 script:
   - mkdir build && cd build

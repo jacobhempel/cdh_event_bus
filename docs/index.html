@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>OctopOS: OctopOS</title>
+<title>OctopOS: Main Page</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -61,10 +61,11 @@ $(function() {
 
 <div class="header">
   <div class="headertitle">
-<div class="title">OctopOS </div>  </div>
+<div class="title">OctopOS Documentation</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>A simple data bus for subsystem communication.</p>
+<div class="textblock"><p><a href="https://travis-ci.org/SpaceHAUC-Command-and-Data-Handling/OctopOS"></a> </p><h1>OctopOS</h1>
+<p>A simple data bus for subsystem communication.</p>
 <h2>Introduction</h2>
 <p>OctopOS is a data bus designed to make subsystem inter communications as easy as possible. It exposes a publisher subscriber model, however it's tentacles can be extended as needed to include other communication methods.</p>
 <p>If you are working on a subsystem for SPACE HAUC then most of the information you will need can be found in the <b>Basic Usage</b> section of this readme.</p>
@@ -97,12 +98,12 @@ $(function() {
 <p>This section is for those who want to understand how <a class="el" href="classoctopOS.html">octopOS</a> works under the hood. If you just want to use <a class="el" href="classoctopOS.html">octopOS</a> see the above <b>Basic Usage</b> section.</p>
 <h3>Calling Modules</h3>
 <p>When a module is created registered with <a class="el" href="classoctopOS.html">octopOS</a>, it forks and execs the independant binary of that module. It passes the message key that it expects the module to communicate on as <code>argv[0]</code>, that is why you pass <code>argv[0]</code> to the constructor of classes inherited from tentical as it constructs itself on top of this message bus.</p>
-<p>All modules, and the number of modules need to be known befor runtime as it stands right now. These are defined in <code><a class="el" href="utility_8h_source.html">utility.h</a></code> and compiled into the main executable. In the future we hope to eliminate this need.</p>
+<p>All modules, and the number of modules need to be known befor runtime as it stands right now. These are defined in <code><a class="el" href="utility_8h.html">utility.h</a></code> and compiled into the main executable. In the future we hope to eliminate this need.</p>
 <h3>Control Flow</h3>
 <p>This section aims to talk through the basic flow of the lifetime of a <a class="el" href="classoctopOS.html">octopOS</a> topic. </p><h3>Shared Memory Segment</h3>
 <h3>Communication Protocal</h3>
 <h2>Full Documentation</h2>
-<p>Full documentation is available <a href="http://github.io/JoshuaHassler/cdh_event_bus">here</a> </p>
+<p>Full documentation is available <a href="https://spacehauc-command-and-data-handling.github.io/OctopOS/">here</a> </p>
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

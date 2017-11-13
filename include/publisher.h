@@ -1,8 +1,9 @@
+// Copyright 2017 Space HAUC Command and Data Handling
 /*!
  * @file
  */
-#ifndef INCLUDE_PUBLISHER_H
-#define INCLUDE_PUBLISHER_H
+#ifndef INCLUDE_PUBLISHER_H_
+#define INCLUDE_PUBLISHER_H_
 
 #include <string>
 #include <sstream>
@@ -11,7 +12,7 @@
 #include <iterator>
 #include <utility>
 
-#include "tentacle.h"
+#include "../include/tentacle.h"
 
 /*!
  * This class is used to publish data to a topic specified on construction. The
@@ -20,7 +21,7 @@
  */
 template <typename T>
 class publisher : public tentacle {
-public:
+ public:
     /*!
      * creates a publisher object and registers it with octopOS.
      * @param _name The name of the topic to publish to.
@@ -30,9 +31,10 @@ public:
         tentacle(message_key), name(_name) {
         id = getTempId(tentacle::role_t::PUBLISHER);
 
-        write(CREATE_PUB, std::to_string(id)+" "+std::to_string(sizeof(T))+" "+name);
+        write(CREATE_PUB, std::to_string(id) + " " +
+            std::to_string(sizeof(T)) + " " + name);
 
-        std::pair<long, std::string> response;
+        std::pair<long, std::string> response;                                    // NOLINT
 
         response = read(id);
 
@@ -43,13 +45,12 @@ public:
             throw std::system_error(
                 errno,
                 std::generic_category(),
-                "Unable to get r/w sem"
-            );
+                "Unable to get r/w sem");
         }
 
-        rw = (shm_object*)(shared_data + std::stoi(tokens[0]));
+        rw = reinterpret_cast<shm_object*>(shared_data + std::stoi(tokens[0]));
 
-        data_ptr = (T*)(rw + 1);
+        data_ptr = reinterpret_cast<T*>(rw + 1);
         id = std::stoi(tokens[2]);
     }
 
@@ -64,7 +65,7 @@ public:
         if (p(semid, 1) >= 0) {
             rw->rw_array[1] += 1;
             if (rw->rw_array[1] == 1) {
-                p(semid, 3);  // TODO check for success
+                p(semid, 3);  // TODO(JoshuaHassler) check for success
             }
 
             v(semid, 1);
@@ -80,14 +81,15 @@ public:
         if (p(semid, 1) >= 0) {
             rw->rw_array[1] -= 1;
             if (rw->rw_array[1] == 0)
-                v(semid, 3);  // TODO check for success
+                v(semid, 3);  // TODO(JoshuaHassler) check for success
             v(semid, 1);
         }
         return return_value;
     }
-private:
+
+ private:
     /*! unique identifier of publisher */
-    long id;
+    long id;                                                                      // NOLINT
     /*! name of topic to publish to */
     std::string name;
     /*! id of semaphore controlling shared data lock */
@@ -99,4 +101,4 @@ private:
     T* data_ptr;
 };
 
-#endif  // INCLUDE_PUBLISHER_H
+#endif  // INCLUDE_PUBLISHER_H_

@@ -1,12 +1,16 @@
-#include "utility.h"
+// Copyright 2017 Space HAUC Command and Data Handling
+/*!
+ * @file
+ */
+#include "../include/utility.h"
 
 intptr_t* connect_shm() {
     intptr_t* return_value = NULL;
     int shm_id;
 
     if ((shm_id = shmget(MEMKEY, SHMSIZE, 0600)) >= 0) {
-        if ((return_value = (intptr_t*)shmat(shm_id, NULL, 0))
-            < (intptr_t*)0 ) {
+        if ((return_value = (intptr_t*)shmat(shm_id, NULL, 0))                    // NOLINT
+            < (intptr_t*)0 ) {                                                    // NOLINT
             return_value = NULL;
         }
     }
@@ -14,7 +18,7 @@ intptr_t* connect_shm() {
     return return_value;
 }
 
-int semsetall (int sem_group, int number_in_group, int value) {
+int semsetall(int sem_group, int number_in_group, int value) {
     union semun sem_ctl_un;
 
     sem_ctl_un.val = value;
@@ -28,7 +32,7 @@ int semsetall (int sem_group, int number_in_group, int value) {
     return 0;
 }
 
-int p (int sem_group, int donut_type) {
+int p(int sem_group, int donut_type) {
     struct sembuf sembuf;
 
     sembuf.sem_num = donut_type;
@@ -43,7 +47,7 @@ int p (int sem_group, int donut_type) {
     return 0;
 }
 
-int v (int sem_group, int donut_type) {
+int v(int sem_group, int donut_type) {
     struct sembuf sembuf;
 
     sembuf.sem_num = donut_type;

@@ -1,5 +1,9 @@
-#ifndef INCLUDE_TENTACLE_H
-#define INCLUDE_TENTACLE_H
+// Copyright 2017 Space HAUC Command and Data Handling
+/*!
+ * @file
+ */
+#ifndef INCLUDE_TENTACLE_H_
+#define INCLUDE_TENTACLE_H_
 
 #include <string.h>
 #include <sys/types.h>
@@ -11,9 +15,9 @@
 #include <cstdlib>
 #include <string>
 #include <utility>
-#include <mutex>
+#include <mutex>                                                                  // NOLINT
 
-#include "utility.h"
+#include "../include/utility.h"
 
 /*!
  * class provides a wrapper for system V IPC message buss. This allows for easy
@@ -23,14 +27,14 @@ class tentacle {
     /*! allows octopOS to see its private. This is needed in a few use cases */
     friend class octopOS;
 
-private:
+ private:
     /*! guards access to rand48 for temp id generation. */
     static std::mutex id_lock;
 
     /*! gives a static initialization of rand48 for temp id generation */
     static void initRand(ushort* rand_seed);
 
-protected:
+ protected:
     /*! id of system V message queue */
     static int message_que;
 
@@ -38,22 +42,22 @@ protected:
     static intptr_t* shared_data;
 
     /*! enum for role discrimination. used to generate temp/perm ids */
-    enum role_t {SUBSCRIBER, PUBLISHER }; // PROTECT ME SQUIRE
+    enum role_t {SUBSCRIBER, PUBLISHER };  // PROTECT ME SQUIRE
 
     /*!
      * generated a tem id for initial communication with octopOS.
      * @param role The role that the id should be generated for.
      * @return An unique temp id.
      */
-    static long getTempId(role_t role);
+    static long getTempId(role_t role);                                           // NOLINT
 
-public:
+ public:
     /*!
      * constructs a tentacle. Attaches shared memory segment to process if it
      * is not already attached.
      * @param msg_key message bus to attach tentacle to.
      */
-    tentacle(key_t msg_key);
+    explicit tentacle(key_t msg_key);
 
     /*!
      * reads a message from the message bus.
@@ -65,7 +69,7 @@ public:
      * @return A pair where first is the type of the message read, and second is
      * the contents of the message as a std::string.
      */
-    static std::pair<long, std::string> read(long type, bool block = true,
+    static std::pair<long, std::string> read(long type, bool block = true,        // NOLINT
                                       bool under = false);
 
     /*!
@@ -74,7 +78,7 @@ public:
      * @param data The message to be sent.
      * @return true if write was successfull, otherwise false.
      */
-    bool write(long type, std::string data);
+    bool write(long type, std::string data);                                      // NOLINT
 
     /*!
      * a wrapper for normal write. allows to pass a pair instead.
@@ -82,7 +86,7 @@ public:
      * data
      * @return true if write was successfull, otherwise false.
      */
-    bool write(std::pair<long, std::string> pair);
+    bool write(std::pair<long, std::string> pair);                                // NOLINT
 };
 
-#endif  // INCLUDE_TENTACLE_H
+#endif  // INCLUDE_TENTACLE_H_

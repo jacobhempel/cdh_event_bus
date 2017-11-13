@@ -1,14 +1,25 @@
-#include "subscriber.h"
+// Copyright 2017 Space HAUC Command and Data Handling
+/*!
+ * @file
+ */
+#include <unordered_map>
+#include <string>
+#include <tuple>
+#include <vector>
 
-bool subscriber_manager::register_cb(callback cb, std::string topic, uint size, subscriber_manager* sub) {
+#include "../include/subscriber.h"
+
+bool subscriber_manager::register_cb(callback cb, std::string topic, uint size,
+    subscriber_manager* sub) {
     registered_callbacks_lock.lock();
     if (registered_callbacks[topic].empty()) {
-        long id = getTempId(tentacle::role_t::SUBSCRIBER);
+        long id = getTempId(tentacle::role_t::SUBSCRIBER);                        // NOLINT Must use long
         uint semid;
 
-        sub->write(CREATE_SUB, std::to_string(id)+" "+std::to_string(size)+" "+topic);
+        sub->write(CREATE_SUB, std::to_string(id) + " " + std::to_string(size) +
+            " " + topic);
 
-        std::pair<long, std::string> response = sub->read(id);
+        std::pair<long, std::string> response = sub->read(id);                    // NOLINT Must use long
 
         std::istringstream iss(response.second);
         std::vector<std::string> tokens{std::istream_iterator<std::string>{iss},
@@ -18,18 +29,16 @@ bool subscriber_manager::register_cb(callback cb, std::string topic, uint size, 
             throw std::system_error(
                 errno,
                 std::generic_category(),
-                "Unable to get r/w sem"
-            );
+                "Unable to get r/w sem");
         }
 
-        shm_object* header = (shm_object*)(shared_data + std::stoi(tokens[0]));
+        shm_object* header = (shm_object*)(shared_data + std::stoi(tokens[0]));   // NOLINT Must do C cast
 
         topic_memory_lock.lock();
         topic_memory[topic] = std::tuple<sem_id_t, shm_object*, generic_t*>(
             semid,
             header,
-            (generic_t*)(header + 1)
-        );
+            (generic_t*)(header + 1));                                            // NOLINT Must do C cast
         topic_memory_lock.unlock();
 
         topic_ids_lock.lock();
@@ -43,13 +52,14 @@ bool subscriber_manager::register_cb(callback cb, std::string topic, uint size, 
     return true;
 }
 
-//TODO implemnt reader writter for callback list
+// TODO(JoshuaHassler) implemnt reader writter for callback list
 void* subscriber_manager::wait_for_data(void* data) {
     while (true) {
         topic_memory_lock.lock();
         topic_ids_lock.lock();  // I'm a little nervous about deadlock here
         for (auto topic : topic_memory) {
-            std::pair<long, std::string> message = tentacle::read(topic_ids[topic.first], false);
+            std::pair<long, std::string> message =                                // NOLINT Must use long
+                tentacle::read(topic_ids[topic.first], false);
             if (message.first) {
                 registered_callbacks_lock.lock();
                 for (auto cb : registered_callbacks["test"]) {
@@ -65,13 +75,23 @@ void* subscriber_manager::wait_for_data(void* data) {
     }
 }
 
-std::unordered_map<std::string, std::tuple<sem_id_t, shm_object*, generic_t*>> subscriber_manager::topic_memory =
-  std::unordered_map<std::string, std::tuple<sem_id_t, shm_object*, generic_t*>>();
+std::unordered_map< std::string,
+                    std::tuple< sem_id_t,
+                                shm_object*,
+                                generic_t*
+                              >
+                  > subscriber_manager::topic_memory =
+    std::unordered_map<std::string,
+        std::tuple<sem_id_t, shm_object*, generic_t*>>();
+
 
 std::unordered_map<std::string, octopOS_id_t> subscriber_manager::topic_ids =
   std::unordered_map<std::string, octopOS_id_t>();
 
-std::unordered_map<std::string, std::vector<callback> > subscriber_manager::registered_callbacks =
-  std::unordered_map<std::string, std::vector<callback> >();
+std::unordered_map<std::string, std::vector<callback>>
+    subscriber_manager::registered_callbacks =
+    std::unordered_map<std::string, std::vector<callback> >();
 
-std::mutex subscriber_manager::topic_ids_lock, subscriber_manager::topic_memory_lock, subscriber_manager::registered_callbacks_lock;
+std::mutex subscriber_manager::topic_ids_lock,
+           subscriber_manager::topic_memory_lock,
+           subscriber_manager::registered_callbacks_lock;

@@ -1,7 +1,8 @@
 var searchData=
 [
-  ['propagate_5fto_5fsubscribers',['propagate_to_subscribers',['../classoctopOS.html#a3390f6eb5e84a422835e5296ccaf6d4c',1,'octopOS']]],
-  ['publish',['publish',['../classpublisher.html#a39f1e48a4a05650538243336795d7a03',1,'publisher']]],
-  ['publisher',['publisher',['../classpublisher.html',1,'publisher&lt; T &gt;'],['../classpublisher.html#ab8e880aa79b65ebb5318ae2a04010d92',1,'publisher::publisher()']]],
-  ['publisher_2eh',['publisher.h',['../publisher_8h.html',1,'']]]
+  ['octopos',['octopOS',['../classoctopOS.html',1,'octopOS'],['../classtentacle.html#a83bcca532b3e4dadc59f21d1f31195c5',1,'tentacle::octopOS()'],['../classoctopOS.html#a8aba4afbec83dda5efb21cdee1ac0ea8',1,'octopOS::octopOS()']]],
+  ['octopos_2ecpp',['octopos.cpp',['../octopos_8cpp.html',1,'']]],
+  ['octopos_2eh',['octopos.h',['../octopos_8h.html',1,'']]],
+  ['octopos_5fid_5ft',['octopOS_id_t',['../utility_8h.html#a3073c3e0f25f91afb25468bb4906fd3c',1,'utility.h']]],
+  ['operator_3d',['operator=',['../classoctopOS.html#a5fdb5eb29d78e1935aff924fcfec306e',1,'octopOS']]]
 ];

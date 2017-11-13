@@ -1,5 +1,9 @@
-#ifndef INCLUDE_UTILITY_H
-#define INCLUDE_UTILITY_H
+// Copyright 2017 Space HAUC Command and Data Handling
+/*!
+ * @file
+ */
+#ifndef INCLUDE_UTILITY_H_
+#define INCLUDE_UTILITY_H_
 
 #include <sys/types.h>
 #include <sys/ipc.h>
@@ -8,7 +12,7 @@
 #include <sys/sem.h>
 
 #include <exception>
-#include <system_error>
+#include <system_error>                                                           // NOLINT
 #include <cerrno>
 
 
@@ -22,21 +26,21 @@
 const unsigned NUMMODULES = 1;
 
 /*! The subscriber bit that needs to be set in ids */
-const long SUB_BIT = 0x20000000;
+const unsigned SUB_BIT = 0x20000000;
 /*! The bit in ids that specifies it is a temp id */
-const long TEMP_BIT = 0x40000000;
+const unsigned TEMP_BIT = 0x40000000;
 
 /*! packet type is requesting creation of publisher */
-const long CREATE_PUB = 1;
+const unsigned CREATE_PUB = 1;
 /*! packet type is requesting notification of subscribers */
-const long PUBLISH_CODE = 2;
+const unsigned PUBLISH_CODE = 2;
 /*! packet type is requesting creation of subscriber */
-const long CREATE_SUB = 3;
+const unsigned CREATE_SUB = 3;
 
 /*! typedef for generic pointers in shared memory segment */
 typedef intptr_t generic_t;
 /*! typedef to increase readability */
-typedef long octopOS_id_t;
+typedef long octopOS_id_t;                                                        // NOLINT
 /*! typedef to make Lukas happy */
 typedef uint sem_id_t;
 
@@ -49,7 +53,7 @@ typedef struct {
 /*! struct to define message bus primative */
 typedef struct {
     /*! the id of the message */
-    long type;
+    long type;                                                                    // NOLINT
     /*! the text of the message */
     char text[MSGLEN];
 } message_buffer;
@@ -61,7 +65,7 @@ union semun {
     /*! a buffer to hold the semid */
     struct semid_ds *buf;
     /*! access the whole thing as an array */
-    unsigned short *array;
+    unsigned short *array;                                                        // NOLINT
 };
 
 /*!
@@ -93,6 +97,6 @@ extern int v(int sem, int counter);
  * @param value The initial value to set.
  * @return value of system call. fail if < 0.
  */
-extern int semsetall (int sem_group, int number_in_group, int value);
+extern int semsetall(int sem_group, int number_in_group, int value);
 
-#endif  // INCLUDE_UTILITY_H
+#endif  // INCLUDE_UTILITY_H_

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['subscriber_2eh',['subscriber.h',['../subscriber_8h.html',1,'']]]
+  ['publisher_2eh',['publisher.h',['../publisher_8h.html',1,'']]]
 ];

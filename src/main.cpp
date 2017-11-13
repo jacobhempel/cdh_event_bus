@@ -1,12 +1,11 @@
-#include "octopos.h"
-#include "tentacle.h"
-
-#include "subscriber.h" // PLEASE DONT FORGET ME
-#include "publisher.h"
-
+// Copyright 2017 Space HAUC Command and Data Handling
+/*!
+ * @file
+ */
 #include <sys/types.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <pthread.h>
 
 #include <iostream>
 #include <string>
@@ -16,8 +15,11 @@
 #include <vector>
 #include <unordered_map>
 
+#include "../include/octopos.h"
+#include "../include/tentacle.h"
 
-#include <pthread.h>
+#include "../include/subscriber.h"  // PLEASE DONT FORGET ME
+#include "../include/publisher.h"
 
 int main(int argc, char const *argv[]) {
     pid_t pid;
@@ -41,7 +43,8 @@ int main(int argc, char const *argv[]) {
         exit(-1);
     }
 
-    if (pthread_create(&subThread, NULL, subscriber_manager::wait_for_data, &x)) {
+    if (pthread_create(&subThread, NULL,
+        subscriber_manager::wait_for_data, &x)) {
         exit(-1);
     }
 
@@ -62,7 +65,7 @@ int main(int argc, char const *argv[]) {
 
     pub.publish(578);
 
-    if(pthread_join(tmp, NULL)) {
+    if (pthread_join(tmp, NULL)) {
         fprintf(stderr, "Error joining thread\n");
         return 2;
     }
