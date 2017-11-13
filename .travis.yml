@@ -10,7 +10,7 @@ compiler:
   - gcc
 # Build steps
 script:
-  - cd build
+  - mkdir build && cd build
   - cmake .. && make
   - make test
   - cd .. && git clone "https://github.com/SpaceHAUC-Command-and-Data-Handling/Powerlint.git" && export PATH=$PATH:. && mv ./Powerlint/* ./
