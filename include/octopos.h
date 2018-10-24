@@ -21,8 +21,8 @@
 #include <memory>
 #include <utility>
 
-#include "../include/utility.h"
-#include "../include/tentacle.h"
+#include "utility.h"                                                              // NOLINT
+#include "tentacle.h"                                                             // NOLINT
 
 
 /*!
