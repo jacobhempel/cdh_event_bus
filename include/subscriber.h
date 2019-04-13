@@ -27,8 +27,8 @@
 template< typename T >
 class Optional {
  public:
-    explicit Optional( T data ) : data_(data), isDefined_( true ) {}
-    Optional() : isDefined_( false ) {}
+    explicit Optional(T data) : data_(data), isDefined_(true) {}
+    Optional() : isDefined_(false) {}
     inline bool isDefined() { return isDefined_; }
     inline bool data() { return data_; }
  private:
@@ -200,7 +200,7 @@ class subscriber : public subscriber_manager {
             pthread_mutex_unlock(&data_queue_lock);
             return Optional<T>();
         } else {
-            Optional<T> return_value( data_queue.front() );
+            Optional<T> return_value(data_queue.front());
             data_queue.pop();
             pthread_mutex_unlock(&data_queue_lock);
             return return_value;
