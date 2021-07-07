@@ -1,3 +1,0 @@
-/home/jacob/Nextcloud/SPACEHAUC_code/octopOS/build/CMakeFiles/edit_cache.dir
-/home/jacob/Nextcloud/SPACEHAUC_code/octopOS/build/CMakeFiles/rebuild_cache.dir
-/home/jacob/Nextcloud/SPACEHAUC_code/octopOS/build/CMakeFiles/octopOS_driver.dir
